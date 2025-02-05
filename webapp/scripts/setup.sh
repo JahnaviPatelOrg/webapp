@@ -21,9 +21,23 @@ echo "Enabling and starting the MySQL service."
 systemctl enable mysql
 systemctl start mysql
 
+cd /tmp || exit
+
+# Extract database credentials from .env file
+DB_USER=$(grep 'DB_USER' .env | cut -d '=' -f2 | tr -d "'")
+DB_PASSWORD=$(grep 'DB_PASSWORD' .env | cut -d '=' -f2 | tr -d "'")
+DB_HOST=$(grep 'DB_HOST' .env | cut -d '=' -f2 | tr -d "'")
+DB_PORT=$(grep 'DB_PORT' .env | cut -d '=' -f2 | tr -d "'")
+
 # Create the database and user if they do not exist.
 echo "Creating the database and user if they do not exist."
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS csye6225;"
+mysql -u root -e "CREATE USER IF NOT EXISTS '$DB_USER'@'$DB_HOST' IDENTIFIED BY '$DB_PASSWORD';"
+mysql -u root -e "GRANT ALL PRIVILEGES ON csye6225.* TO '$DB_USER'@'$DB_HOST';"
+mysql -u root -e "FLUSH PRIVILEGES;"
+
+cd ..
+
 
 #Create a new Linux group for the application if it does not exist.
 echo "Creating a new Linux group for the application if it does not exist."
@@ -44,7 +58,7 @@ chown -R csye6225:csye6225 /opt/csye6225
 chmod -R 755 /opt/csye6225
 
 #move .env file to /opt/csye6225/webapp
-mv /tmp/.env /opt/csye6225/webapp
+cp /tmp/.env /opt/csye6225/webapp
 chown csye6225:csye6225 /opt/csye6225/webapp/.env
 chmod 600 /opt/csye6225/webapp/.env
 
