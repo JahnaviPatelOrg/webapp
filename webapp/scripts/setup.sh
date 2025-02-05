@@ -33,7 +33,7 @@ DB_PORT=$(grep 'DB_PORT' .env | cut -d '=' -f2 | tr -d "'")
 echo "Creating the database and user if they do not exist."
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS csye6225;"
 mysql -u root -e "CREATE USER IF NOT EXISTS '$DB_USER'@'$DB_HOST' IDENTIFIED BY '$DB_PASSWORD';"
-mysql -u root -e "GRANT ALL PRIVILEGES ON csye6225.* TO '$DB_USER'@'$DB_HOST';"
+mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO '$DB_USER'@'$DB_HOST';"
 mysql -u root -e "FLUSH PRIVILEGES;"
 
 cd ..
@@ -83,6 +83,9 @@ cd webapp || exit
 # Run migrations.
 python3 manage.py makemigrations
 python3 manage.py migrate
+
+#test the application
+python3 manage.py test
 
 # run the server on vm ip and port 8080
 python3 manage.py runserver $VM_IP:8080
