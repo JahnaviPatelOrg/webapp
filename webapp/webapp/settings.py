@@ -27,7 +27,9 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+VM_IP = config('VM_IP', default='127.0.0.1')
+
+ALLOWED_HOSTS = [VM_IP, 'localhost','127.0.0.1']
 
 
 # Application definition
@@ -35,6 +37,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "rest_framework",
     "healthz",
+    "tests",
 ]
 
 MIDDLEWARE = [
@@ -82,7 +85,3 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-MIGRATION_MODULES = {
-    "healthz": None,  # Replace "your_app_name" with your actual app name
-}

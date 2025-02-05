@@ -73,6 +73,12 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+## **Testing**
+
+### **Run tests**
+```bash
+python manage.py test
+```
 
 
 
