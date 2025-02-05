@@ -16,13 +16,13 @@ apt-get install -y mysql-server unzip pkg-config libmysqlclient-dev
 systemctl enable mysql
 systemctl start mysql
 
-# Create the database and user.
-mysql -u root -e "CREATE DATABASE csye6225;"
+# Create the database and user if they do not exist.
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS csye6225;"
 
-#Create a new Linux group for the application.
-groupadd csye6225
+#Create a new Linux group for the application if it does not exist.
+groupadd -f csye6225
 
-#Create a new Linux user for the application.
+#Create a new Linux user for the application if it does not exist.
 useradd -m -g csye6225 -s /usr/sbin/nologin csye6225
 
 # Create directory for the web application  in /opt/csye6225 directory.
@@ -34,6 +34,11 @@ chown -R csye6225:csye6225 /opt/csye6225
 
 # Update the permissions of the folder and artifacts in the directory.
 chmod -R 755 /opt/csye6225
+
+#move .env file to /opt/csye6225/webapp
+mv /tmp/.env /opt/csye6225/webapp
+chown csye6225:csye6225 /opt/csye6225/webapp/.env
+chmod 600 /opt/csye6225/webapp/.env
 
 # Go to the directory where the web application is installed.
 cd /opt/csye6225/webapp || exit
