@@ -1,28 +1,36 @@
 #!/bin/bash
 
 # Update the package lists for upgrades for packages that need upgrading.
+echo "Updating the package lists for upgrades for packages that need upgrading."
 apt-get update -y
 
-# Upgrade the packages.
-apt-get upgrade -y
+# Upgrade the packages on the system.
+echo "Upgrading the packages on the system."
+apt-get upgrade -y  --force-confnew
 
 # Install Python and its package manager.
+echo "Installing Python and its package manager."
 apt-get install -y python3 python3-pip python3-venv python-is-python3
 
 # Install other packages.
+echo "Installing other packages."
 apt-get install -y mysql-server unzip pkg-config libmysqlclient-dev
 
 # Enable and start the MySQL service.
+echo "Enabling and starting the MySQL service."
 systemctl enable mysql
 systemctl start mysql
 
 # Create the database and user if they do not exist.
+echo "Creating the database and user if they do not exist."
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS csye6225;"
 
 #Create a new Linux group for the application if it does not exist.
+echo "Creating a new Linux group for the application if it does not exist."
 groupadd -f csye6225
 
 #Create a new Linux user for the application if it does not exist.
+echo "Creating a new Linux user for the application if it does not exist."
 useradd -m -g csye6225 -s /usr/sbin/nologin csye6225
 
 # Create directory for the web application  in /opt/csye6225 directory.
@@ -52,6 +60,9 @@ source venv/bin/activate
 # Install the required packages.
 pip3 install -r requirements.txt
 
+#store vm_ip address
+VM_IP=$(grep 'VM_IP' .env | cut -d '=' -f2 | tr -d "'")
+
 # Go to the directory where the web application is installed.
 cd webapp || exit
 
@@ -59,10 +70,7 @@ cd webapp || exit
 python3 manage.py makemigrations
 python3 manage.py migrate
 
-# Run the application.
-python3 manage.py runserver
-
-
-
+# run the server on vm ip and port 8080
+python3 manage.py runserver $VM_IP:8080
 
 
