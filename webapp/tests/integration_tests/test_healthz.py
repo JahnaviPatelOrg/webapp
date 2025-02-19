@@ -19,7 +19,7 @@ class HealthzIntegrationTest(TransactionTestCase):
 
     def test_healthz_rejects_payload_body(self):
         """Test that /healthz returns 400 if request has a payload."""
-        request = self.client.generic("GET", "/healthz", "test data")
+        request = self.client.generic("GET", "/healthz", "test data to check")
         self.assertEqual(request.status_code, 400)
 
     def test_healthz_db_failure(self):
