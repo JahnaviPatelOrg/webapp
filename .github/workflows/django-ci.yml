@@ -57,13 +57,15 @@ jobs:
           echo "DB_PORT=$DB_PORT" >> .env
           echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" >> .env
 
-      - name: Run Migrations
+      - name: Run Migrations and Tests
+        env:
+          DATABASE_NAME: ${{ secrets.DB_NAME }}
+          DATABASE_USER: ${{ secrets.DB_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DATABASE_HOST: ${{ secrets.DB_HOST }}
+          DATABASE_PORT: ${{ secrets.DB_PORT }}
         run: |
           python manage.py makemigrations
           python manage.py migrate
-        working-directory: ./webapp
-
-      - name: Run Tests
-        run: |
           python manage.py test
         working-directory: ./webapp
