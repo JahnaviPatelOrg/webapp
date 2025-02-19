@@ -71,14 +71,14 @@ python3 -m venv venv
 # Activate the virtual environment.
 source venv/bin/activate
 
-# Install the required packages.
-pip3 install -r requirements.txt
-
 #store vm_ip address
 VM_IP=$(grep 'VM_IP' .env | cut -d '=' -f2 | tr -d "'")
 
 # Go to the directory where the web application is installed.
 cd webapp || exit
+
+# Install the required packages.
+pip3 install -r requirements.txt
 
 # Run migrations.
 python3 manage.py makemigrations
