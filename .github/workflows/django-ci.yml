@@ -56,7 +56,6 @@ jobs:
           echo "DB_HOST=$DB_HOST" >> .env
           echo "DB_PORT=$DB_PORT" >> .env
           echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" >> .env
-        working-directory: ./webapp
 
       - name: Run Migrations
         run: |
