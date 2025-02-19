@@ -10,21 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        python-version: [ 3.11 ]
-
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-          MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-        ports:
-          - 3306:3306
-
     env:
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USER: ${{ secrets.DB_USER }}
@@ -32,6 +17,11 @@ jobs:
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_PORT: ${{ secrets.DB_PORT }}
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+
+
+    strategy:
+      matrix:
+        python-version: [ 3.11 ]
 
     steps:
       - name: Checkout the repository to the runner
@@ -42,24 +32,29 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Dependencies
-        run: python -m pip install --upgrade pip
-                pip install -r requirements.txt
-
-      - name: Set up Environment Variables
+      - name: Start mysql
         run: |
-          echo "DB_NAME=$DB_NAME" >> .env
-          echo "DB_USER=$DB_USER" >> .env
-          echo "DB_PASSWORD=$DB_PASSWORD" >> .env
-          echo "DB_HOST=$DB_HOST" >> .env
-          echo "DB_PORT=$DB_PORT" >> .env
-          echo "DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY" >> .env
+          sudo /etc/init.d/mysql start
+          mysql -e "CREATE DATABASE IF NOT EXISTS ${{ secrets.DB_NAME }};" -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }}
 
-      - name: Run Migrations
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        working-directory: ./webapp
+
+
+      - name: Run Migrations and Tests
+        env:
+          SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DATABASE_NAME: ${{ secrets.DB_NAME }}
+          DATABASE_USER: ${{ secrets.DB_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DATABASE_HOST: ${{ secrets.DB_HOST }}
+          DATABASE_PORT: ${{ secrets.DB_PORT }}
         run: |
           python manage.py makemigrations
-          python manage.py migrate    
-
-      - name: Run Tests
-        run: |
+          python manage.py migrate
           python manage.py test
+        working-directory: ./webapp
