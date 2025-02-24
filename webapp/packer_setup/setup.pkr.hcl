@@ -37,11 +37,6 @@ variable "ssh_username" {
   type = string
 }
 
-variable "volume_size" {
-  type    = number
-  default = 25
-}
-
 variable "volume_type" {
   type    = string
   default = "gp2"
@@ -70,7 +65,7 @@ source "amazon-ebs" "ubuntu" {
 
   launch_block_device_mappings {
     device_name           = "/dev/sda1"
-    volume_size           = var.volume_size
+    volume_size           = 25
     volume_type           = var.volume_type
     delete_on_termination = true
   }
