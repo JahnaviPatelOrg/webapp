@@ -1,0 +1,60 @@
+name: packer_setup
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+    packer:
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        - name: Setup `packer`
+          uses: hashicorp/setup-packer@main
+          id: setup
+
+        - name: Initialize Packer
+          run: packer init aws.pkr.hcl
+
+        - name: Run packer fmt
+          id: packer_fmt
+          run: |
+            packer fmt -diff -check aws.pkr.hcl
+            continue-on-error: true
+
+        - name: Fail if packer fmt modifies files
+          if: steps.packer_fmt.outcome == 'failure'
+          run: |
+            echo "Packer fmt modified files. Please run 'packer fmt' locally and commit the changes."
+            exit 1
+
+        - name: Create Test Files and Zip
+          run: |
+            touch test.txt
+            zip webapp.zip test.txt
+
+#        - name: Validate Packer template
+#          env:
+#            AWS_REGION: ${{ secrets.AWS_REGION }}
+#            AWS_SOURCE_AMI: ${{ secrets.AWS_SOURCE_AMI }}
+#            DB_HOST: ${{ secrets.DB_HOST }}
+#            DB_USER: ${{ secrets.DB_USER }}
+#            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+#            DB_NAME: ${{ secrets.DB_NAME }}
+#            DB_DIALECT: ${{ secrets.DB_DIALECT }}
+#            SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+#          run: |
+#            packer validate \
+#                -var "aws_region=AWS_REGION" \
+#                -var "aws_source_ami=AWS_SOURCE_AMI" \
+#                -var "db_host=DB_HOST" \
+#                -var "db_user=DB_USER" \
+#                -var "db_password=DB_PASSWORD" \
+#                -var "db_name=DB_NAME" \
+#                -var "db_dialect=DB_DIALECT" \
+#                -var "ssh_username=SSH_USERNAME"
+#                aws.pkr.hcl
