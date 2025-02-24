@@ -23,7 +23,7 @@ jobs:
         - name: Run packer fmt
           id: packer_fmt
           run: |
-            packer fmt -diff -check aws.pkr.hcl
+            packer fmt -diff -check setup.pkr.hcl
             continue-on-error: true
 
         - name: Fail if packer fmt modifies files
