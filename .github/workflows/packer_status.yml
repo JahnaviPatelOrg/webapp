@@ -19,23 +19,26 @@ jobs:
 
         - name: Initialize Packer
           run: packer init setup.pkr.hcl
+          working-directory: ./webapp/packer_setup
 
         - name: Run packer fmt
           id: packer_fmt
           run: |
             packer fmt -diff -check setup.pkr.hcl
             continue-on-error: true
+          working-directory: ./webapp/packer_setup
 
         - name: Fail if packer fmt modifies files
           if: steps.packer_fmt.outcome == 'failure'
           run: |
             echo "Packer fmt modified files. Please run 'packer fmt' locally and commit the changes."
             exit 1
+          working-directory: ./webapp/packer_setup
 
-        - name: Create Test Files and Zip
-          run: |
-            touch test.txt
-            zip webapp.zip test.txt
+#        - name: Create Test Files and Zip
+#          run: |
+#            touch test.txt
+#            zip webapp.zip test.txt
 
 #        - name: Validate Packer template
 #          env:
