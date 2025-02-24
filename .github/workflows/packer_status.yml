@@ -25,7 +25,7 @@ jobs:
           id: packer_fmt
           run: |
             packer fmt -diff -check setup.pkr.hcl
-            continue-on-error: true
+          continue-on-error: true
           working-directory: ./webapp/packer_setup
 
         - name: Fail if packer fmt modifies files
