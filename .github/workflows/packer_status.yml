@@ -42,24 +42,17 @@ jobs:
 
         - name: Validate Packer template
           env:
-            Region: ${{ variables.AWS_REGION }}
-            Instance_Type: ${{ variables.INSTANCE_TYPE }}
             Source_AMI: ${{ secrets.AWS_SOURCE_AMI }}
-            AMI_Name: ${{ variables.AMI_NAME }}
-            AMI_Description: ${{ variables.AMI_DESCRIPTION }}
-            SSH_Username: ${{ variables.SSH_USERNAME }}
-            Volume_Size: ${{ variables.VOLUME_SIZE }}
-            Volume_Type: ${{ variables.VOLUME_TYPE }}
             AWS_Account_IDs: ${{ secrets.AWS_ACCOUNT_IDS }}
           run: |
             packer validate \
-                -var "region=Region" \
-                -var "instance_type=Instance_Type" \
+                -var "region=$AWS_REGION" \
+                -var "instance_type=$INSTANCE_TYPE" \
                 -var "source_ami=Source_AMI" \
-                -var "ami_name=AMI_Name" \
-                -var "ami_description=AMI_Description" \
-                -var "ssh_username=SSH_Username" \
-                -var "volume_size=Volume_Size" \
-                -var "volume_type=Volume_Type" \
+                -var "ami_name=$AMI_NAME" \
+                -var "ami_description=$AMI_DESCRIPTION" \
+                -var "ssh_username=$SSH_USERNAME" \
+                -var "volume_size=$VOLUME_SIZE" \
+                -var "volume_type=$VOLUME_TYPE" \
                 -var "account_ids=AWS_Account_IDs" \
                 setup.pkr.hcl
