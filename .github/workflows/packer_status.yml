@@ -18,7 +18,7 @@ jobs:
           id: setup
 
         - name: Initialize Packer
-          run: packer init aws.pkr.hcl
+          run: packer init setup.pkr.hcl
 
         - name: Run packer fmt
           id: packer_fmt
