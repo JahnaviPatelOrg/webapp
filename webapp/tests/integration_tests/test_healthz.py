@@ -10,7 +10,7 @@ class HealthzIntegrationTest(TransactionTestCase):
     def test_healthz_success(self):
         """Test that /healthz returns 200 when DB is working."""
         response = self.client.get("/healthz")  # No payload
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
 
     def test_healthz_rejects_payload_param(self):
         """Test that /healthz returns 400 if request has a payload."""
