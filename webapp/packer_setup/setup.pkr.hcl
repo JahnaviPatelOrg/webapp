@@ -77,7 +77,7 @@ source "amazon-ebs" "ubuntu" {
 
   ssh_username     = var.ssh_username
   ssh_wait_timeout = "10m"
-  source_ami       = "ami-04b4f1a9cf54c11d0"
+  source_ami       = var.source_ami
 
 
   launch_block_device_mappings {
