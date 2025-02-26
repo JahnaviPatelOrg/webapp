@@ -41,7 +41,7 @@ jobs:
             Region: ${{ vars.AWS_REGION }}
             Instance_Type: ${{ vars.INSTANCE_TYPE }}
             Source_AMI: ${{ secrets.AWS_SOURCE_AMI }}
-            AMI_Name: ${{ vars.AMI_NAME }}
+            AMI_Name: "${{ vars.AMI_NAME }}"
             AMI_Description: ${{ vars.AMI_DESCRIPTION }}
             SSH_Username: ${{ vars.SSH_USERNAME }}
             Volume_Type: ${{ vars.VOLUME_TYPE }}
@@ -49,6 +49,7 @@ jobs:
             GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
             SOURCE_IMAGE_FAMILY: ${{ secrets.SOURCE_IMAGE_FAMILY }}
             GOOGLE_REGION: ${{ secrets.GOOGLE_REGION }}
+            GOOGLE_IMAGE_FAMILY: ${{ vars.GOOGLE_IMAGE_FAMILY }}
           run: |
             packer validate \
                 -var "region=Region" \
@@ -62,5 +63,6 @@ jobs:
                 -var "google_project_id=GOOGLE_PROJECT_ID" \
                 -var "source_image_family=SOURCE_IMAGE_FAMILY" \
                 -var "gcpregion=GOOGLE_REGION" \
+                -var "gmi_name=GOOGLE_IMAGE_FAMILY" \
                 setup.pkr.hcl
           working-directory: ./webapp/packer_setup
