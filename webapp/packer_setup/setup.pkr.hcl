@@ -104,7 +104,7 @@ source "amazon-ebs" "ubuntu" {
 source "googlecompute" "ubuntu" {
   project_id          = var.google_project_id
   source_image_family = var.source_image_family
-  image_name          = var.gmi_name
+  image_name          = 'my-gce-image'
   image_description   = var.ami_description
   ssh_username        = var.ssh_username
   zone                = var.gcpregion
