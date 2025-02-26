@@ -65,5 +65,3 @@ jobs:
       - name: zip files
         run: zip -r webapp.zip . -x "*.git*" -x ".github/*" -x "README.md"
 
-      - name: Verify ZIP contents
-        run: unzip -l webapp.zip
