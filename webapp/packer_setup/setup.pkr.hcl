@@ -4,6 +4,11 @@ packer {
       version = ">= 1.0.0, < 2.0.0"
       source  = "github.com/hashicorp/amazon"
     }
+
+    googlecompute = {
+      source  = "github.com/hashicorp/googlecompute"
+      version = ">= 1, < 2"
+    }
   }
 }
 
@@ -14,8 +19,7 @@ variable "region" {
 }
 
 variable "source_ami" {
-  type    = string
-  default = "ami-0a290015b99140cd1"
+  type = string
 }
 
 variable "instance_type" {
@@ -47,6 +51,19 @@ variable "account_ids" {
   description = "List of AWS account IDs"
 }
 
+variable "google_project_id" {
+  type = string
+}
+
+variable "source_image_family" {
+  type = string
+}
+
+variable "gcpregion" {
+  type    = string
+  default = "us-east1-b"
+}
+
 source "amazon-ebs" "ubuntu" {
   ami_name        = var.ami_name
   ami_description = var.ami_description
@@ -60,12 +77,12 @@ source "amazon-ebs" "ubuntu" {
 
   ssh_username     = var.ssh_username
   ssh_wait_timeout = "10m"
-  source_ami       = var.source_ami
+  source_ami       = "ami-04b4f1a9cf54c11d0"
 
 
   launch_block_device_mappings {
     device_name           = "/dev/sda1"
-    volume_size           = 25
+    volume_size           = 8
     volume_type           = var.volume_type
     delete_on_termination = true
   }
@@ -78,9 +95,20 @@ source "amazon-ebs" "ubuntu" {
   }
 }
 
+source "googlecompute" "ubuntu" {
+  project_id          = var.google_project_id
+  source_image_family = var.source_image_family
+  image_name          = var.ami_name
+  image_description   = var.ami_description
+  ssh_username        = var.ssh_username
+  zone                = var.gcpregion
+}
+
+
 build {
   sources = [
-    "source.amazon-ebs.ubuntu"
+    "source.amazon-ebs.ubuntu",
+    "source.googlecompute.ubuntu"
   ]
 
   provisioner "shell" {

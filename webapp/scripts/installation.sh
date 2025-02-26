@@ -31,3 +31,5 @@ sudo groupadd -f csye6225
 echo "Creating a new Linux user for the application if it does not exist."
 sudo useradd -m -g csye6225 -s /usr/sbin/nologin csye6225
 
+
+

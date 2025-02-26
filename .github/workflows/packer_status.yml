@@ -34,11 +34,7 @@ jobs:
             echo "Packer fmt modified files. Please run 'packer fmt' locally and commit the changes."
             exit 1
           working-directory: ./webapp/packer_setup
-#
-#        - name: Create Test Files and Zip
-#          run: |
-#            touch test.txt
-#            zip webapp.zip test.txt
+
 
         - name: Validate Packer template
           env:
