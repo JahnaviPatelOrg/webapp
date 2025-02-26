@@ -59,5 +59,8 @@ jobs:
                 -var "ssh_username=SSH_Username" \
                 -var "volume_type=Volume_Type" \
                 -var "account_ids=[\"AWS_Account_IDs\"]" \
+                -var "google_project_id=GOOGLE_PROJECT_ID" \
+                -var "source_image_family=SOURCE_IMAGE_FAMILY" \
+                -var "google_region=GOOGLE_REGION" \
                 setup.pkr.hcl
           working-directory: ./webapp/packer_setup
