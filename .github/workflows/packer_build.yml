@@ -61,3 +61,7 @@ jobs:
           python manage.py migrate
           python manage.py test
         working-directory: ./webapp
+
+      - name: zip files
+        run: zip -r webapp.zip . -x "*.git*" -x ".github/*" -x "README.md"
+
