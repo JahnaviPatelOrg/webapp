@@ -75,7 +75,7 @@ jobs:
       - name: Test AWS Credentials
         run: aws sts get-caller-identity
 
-      - id: 'gcloud Cloud SDK auth'
+      - name: 'gcloud Cloud SDK auth'
         uses: 'google-github-actions/auth@v2'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
