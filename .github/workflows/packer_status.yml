@@ -46,6 +46,9 @@ jobs:
             SSH_Username: ${{ vars.SSH_USERNAME }}
             Volume_Type: ${{ vars.VOLUME_TYPE }}
             AWS_Account_IDs: ${{ secrets.AWS_DEV_ACCOUNT_ID }}
+            GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+            SOURCE_IMAGE_FAMILY: ${{ secrets.SOURCE_IMAGE_FAMILY }}
+            GOOGLE_REGION: ${{ secrets.GOOGLE_REGION }}
           run: |
             packer validate \
                 -var "region=Region" \
