@@ -12,38 +12,8 @@ packer {
   }
 }
 
-
-variable "region" {
-  type    = string
-  default = "us-east-1"
-}
-
 variable "source_ami" {
   type = string
-}
-
-variable "instance_type" {
-  type    = string
-  default = "t2.micro"
-}
-
-variable "ami_name" {
-  type        = string
-  description = "AMI for Assignment 4"
-}
-
-variable "ami_description" {
-  type    = string
-  default = "Webapp AMI packer"
-}
-
-variable "ssh_username" {
-  type = string
-}
-
-variable "volume_type" {
-  type    = string
-  default = "gp2"
 }
 
 variable "account_ids" {
@@ -55,33 +25,39 @@ variable "google_project_id" {
   type = string
 }
 
-variable "gmi_name" {
-  type        = string
-  description = "GCP Image Name"
-  default     = "my-gce-image"
-}
-
-variable "source_image_family" {
+variable "db_host" {
   type = string
 }
 
-variable "gcpregion" {
-  type    = string
-  default = "us-east1-b"
+variable "db_user" {
+  type = string
 }
 
+variable "db_password" {
+  type = string
+}
+
+variable "db_name" {
+  type = string
+}
+
+variable "secret_key" {
+  type = string
+}
+
+
 source "amazon-ebs" "ubuntu" {
-  ami_name        = var.ami_name
-  ami_description = var.ami_description
-  instance_type   = var.instance_type
-  region          = var.region
+  ami_name        = "webapp-ami"
+  ami_description = "Webapp AMI packer"
+  instance_type   = "t2.micro"
+  region          = "us-east-1"
 
   aws_polling {
     delay_seconds = 120
     max_attempts  = 50
   }
 
-  ssh_username     = var.ssh_username
+  ssh_username     = "ubuntu"
   ssh_wait_timeout = "10m"
   source_ami       = var.source_ami
 
@@ -89,36 +65,74 @@ source "amazon-ebs" "ubuntu" {
   launch_block_device_mappings {
     device_name           = "/dev/sda1"
     volume_size           = 8
-    volume_type           = var.volume_type
+    volume_type           = "gp2"
     delete_on_termination = true
   }
 
   ami_users = var.account_ids
 
   tags = {
-    Name        = "webapp-ami"
-    Description = "Webapp AMI packer"
+    Name        = "webapp-gmi"
+    Description = "Webapp GMI packer"
   }
 }
 
 source "googlecompute" "ubuntu" {
   project_id          = var.google_project_id
-  source_image_family = var.source_image_family
-  image_description   = var.ami_description
-  ssh_username        = var.ssh_username
-  zone                = var.gcpregion
+  source_image_family = "ubuntu-2404-lts-amd64"
+  image_description   = "Webapp GCE Image packer"
+  ssh_username        = "ubuntu"
+  zone                = "us-east1-b"
 }
 
 
 build {
   sources = [
     "source.amazon-ebs.ubuntu",
-    "source.googlecompute.ubuntu"
+    #     "source.googlecompute.ubuntu"
   ]
-
   provisioner "shell" {
     script = "../scripts/installation.sh" # This script installs necessary dependencies and configurations
   }
 
+  #   set up mysql database
+  # Create the database and user if they do not exist.
+  provisioner "shell" {
+    environment_vars = [
+      "DB_USER=${var.db_user}",
+      "DB_PASSWORD=${var.db_password}",
+      "DB_NAME=${var.db_name}",
+      "DB_HOST=${var.db_host}",
+    ]
+    script = "../scripts/sql_setup.sh"
+  }
 
+
+  #  paste webapp.zip created by github action
+  provisioner "file" {
+    source      = "../../webapp.zip"
+    destination = "/tmp/webapp.zip"
+  }
+
+
+  # Unzip the webapp.zip file to /opt/csye6225
+  provisioner "shell" {
+    inline = [
+      "cd /tmp",
+      "sudo unzip -o webapp.zip -d /opt/csye6225"
+    ]
+  }
+
+
+  #   set up webapp
+  provisioner "shell" {
+    environment_vars = [
+      "DB_USER=${var.db_user}",
+      "DB_PASSWORD=${var.db_password}",
+      "DB_NAME=${var.db_name}",
+      "DB_HOST=${var.db_host}",
+      "SECRET_KEY=${var.secret_key}"
+    ]
+    script = "../scripts/webapp_setup.sh"
+  }
 }

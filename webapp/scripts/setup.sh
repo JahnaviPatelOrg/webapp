@@ -48,27 +48,34 @@ echo "Creating a new Linux user for the application if it does not exist."
 useradd -m -g csye6225 -s /usr/sbin/nologin csye6225
 
 # Create directory for the web application  in /opt/csye6225 directory.
+echo "Creating directory for the web application."
 mkdir -p /opt/csye6225
 unzip /tmp/webapp.zip -d /opt/csye6225
 
 # Change the ownership of the directory to the new user and group.
+echo "Changing the ownership of the directory to the new user and group."
 chown -R csye6225:csye6225 /opt/csye6225
 
 # Update the permissions of the folder and artifacts in the directory.
+echo "Updating the permissions of the folder and artifacts in the directory."
 chmod -R 755 /opt/csye6225
 
 #move .env file to /opt/csye6225/webapp
+echo "Moving .env file to /opt/csye6225/webapp"
 cp /tmp/.env /opt/csye6225/webapp
 chown csye6225:csye6225 /opt/csye6225/webapp/.env
 chmod 600 /opt/csye6225/webapp/.env
 
 # Go to the directory where the web application is installed.
+echo "Going to the directory where the web application is installed."
 cd /opt/csye6225/webapp || exit
 
 # Create a virtual environment for the application.
+echo "Creating a virtual environment for the application."
 python3 -m venv venv
 
 # Activate the virtual environment.
+echo "Activating the virtual environment."
 source venv/bin/activate
 
 #store vm_ip address
@@ -89,5 +96,7 @@ python3 manage.py test
 
 # run the server on vm ip and port 8080
 python3 manage.py runserver $VM_IP:8080
+
+
 
 
