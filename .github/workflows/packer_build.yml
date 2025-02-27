@@ -118,7 +118,7 @@ jobs:
             Source_AMI: ${{ secrets.AWS_SOURCE_AMI }}
             AWS_Account_IDs: ${{ secrets.AWS_DEV_ACCOUNT_ID }}
             GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
-        run:
+        run: |
           packer build \
             -var "source_ami=${Source_AMI}" \
             -var "account_ids=[\"${AWS_Account_IDs}\"]" \

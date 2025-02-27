@@ -68,17 +68,17 @@ source "googlecompute" "ubuntu" {
 
 build {
   sources = [
-    #     "source.amazon-ebs.ubuntu",
+    "source.amazon-ebs.ubuntu",
     "source.googlecompute.ubuntu"
   ]
-    provisioner "shell" {
-        inline = [
-        "sudo apt-get update",
-        "sudo apt-get install -y nginx",
-        "sudo systemctl start nginx",
-        "sudo systemctl enable nginx"
-        ]
-    }
+  provisioner "shell" {
+    inline = [
+      "sudo apt-get update",
+      "sudo apt-get install -y nginx",
+      "sudo systemctl start nginx",
+      "sudo systemctl enable nginx"
+    ]
+  }
 
 
 }
