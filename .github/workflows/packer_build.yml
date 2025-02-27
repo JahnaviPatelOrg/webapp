@@ -124,6 +124,7 @@ jobs:
             DB_USER: ${{ secrets.DB_USER }}
             DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
             DB_NAME: ${{ secrets.DB_NAME }}
+            DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         run: |
           packer build \
             -var "source_ami=${Source_AMI}" \
@@ -133,5 +134,6 @@ jobs:
             -var "db_user=${DB_USER}" \
             -var "db_password=${DB_PASSWORD}" \
             -var "db_name=${DB_NAME}" \
+            -var "secret_key=${DJANGO_SECRET_KEY}" \
           setup.pkr.hcl
         working-directory: ./webapp/packer_setup
