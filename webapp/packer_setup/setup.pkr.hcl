@@ -89,7 +89,7 @@ source "googlecompute" "ubuntu" {
 build {
   sources = [
     "source.amazon-ebs.ubuntu",
-    #     "source.googlecompute.ubuntu"
+    "source.googlecompute.ubuntu"
   ]
   provisioner "shell" {
     script = "../scripts/installation.sh" # This script installs necessary dependencies and configurations
