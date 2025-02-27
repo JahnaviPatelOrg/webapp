@@ -66,24 +66,6 @@ jobs:
       - name: zip files
         run: zip -r webapp.zip . -x "*.git*" -x ".github/*" -x "README.md"
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-            aws-access-key-id: ${{ secrets.DEV_AMI_AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.DEV_AMI_AWS_SECRET_ACCESS_KEY }}
-            aws-region: us-east-1
-
-      - name: 'gcloud Cloud SDK auth'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
-
-      - name: 'Use gcloud CLI'
-        run: 'gcloud info'
-
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.6.1
         with:
@@ -97,6 +79,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEV_AMI_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEV_AMI_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: 'gcloud Cloud SDK auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
 
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
