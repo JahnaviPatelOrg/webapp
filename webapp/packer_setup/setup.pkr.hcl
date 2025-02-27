@@ -71,10 +71,14 @@ build {
     #     "source.amazon-ebs.ubuntu",
     "source.googlecompute.ubuntu"
   ]
-
-  provisioner "shell" {
-    script = "../scripts/installation.sh" # This script installs necessary dependencies and configurations
-  }
+    provisioner "shell" {
+        inline = [
+        "sudo apt-get update",
+        "sudo apt-get install -y nginx",
+        "sudo systemctl start nginx",
+        "sudo systemctl enable nginx"
+        ]
+    }
 
 
 }
