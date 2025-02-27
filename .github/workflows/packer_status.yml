@@ -48,7 +48,8 @@ jobs:
         - name: Validate Packer template
           env:
             Source_AMI: ${{ secrets.AWS_SOURCE_AMI }}
-            AWS_Account_IDs: ${{ secrets.AWS_DEV_ACCOUNT_ID }}
+            AWS_Account_IDs: ${{ secrets.AWS_DEMO_ACCOUNT_ID }}
+            AWS_DEMO_ACCOUNT_ID: ${{ secrets.AWS_DEV_ACCOUNT_ID }}
             GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
             DB_HOST: ${{ secrets.DB_HOST }}
             DB_USER: ${{ secrets.DB_USER }}
@@ -58,7 +59,7 @@ jobs:
           run: |
             packer validate \
               -var "source_ami=${Source_AMI}" \
-              -var "account_ids=[\"${AWS_Account_IDs}\"]" \
+              -var "account_ids=[\"${AWS_Account_IDs}\",\"${AWS_DEMO_ACCOUNT_ID}\"]" \
               -var "google_project_id=${GOOGLE_PROJECT_ID}" \
              -var "db_host=${DB_HOST}" \
             -var "db_user=${DB_USER}" \
