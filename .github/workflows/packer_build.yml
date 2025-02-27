@@ -108,8 +108,8 @@ jobs:
       - name: Download a Build Artifact
         uses: actions/download-artifact@v4.1.9
         with:
-          name: webapp
-
+          name: webapp-artifact
+          path: ./webapp.zip
 
       - name: Initialize Packer
         run: packer init setup.pkr.hcl
