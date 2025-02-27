@@ -84,8 +84,8 @@ jobs:
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.6.1
         with:
           name: webapp-artifact
           path: ./webapp/webapp.zip
@@ -101,8 +101,8 @@ jobs:
         uses: hashicorp/setup-packer@main
         id: setup
 
-      - name: Download artifact
-        uses: actions/download-artifact@v2
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v4.1.9
         with:
           name: webapp-artifact
           path: ./webapp
