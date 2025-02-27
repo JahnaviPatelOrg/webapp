@@ -1,7 +1,8 @@
 name: packer_build
 
 on:
-  push:
+# TODO : change to push later
+  pull_request:
     branches:
       - main
 
@@ -72,9 +73,6 @@ jobs:
             aws-secret-access-key: ${{ secrets.DEV_AMI_AWS_SECRET_ACCESS_KEY }}
             aws-region: us-east-1
 
-      - name: Test AWS Credentials
-        run: aws sts get-caller-identity
-
       - name: 'gcloud Cloud SDK auth'
         uses: 'google-github-actions/auth@v2'
         with:
@@ -85,3 +83,61 @@ jobs:
 
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: webapp-artifact
+          path: ./webapp/webapp.zip
+
+  packer_buid:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: webapp-artifact
+          path: ./webapp
+
+      - name: Initialize Packer
+        run: packer init setup.pkr.hcl
+        working-directory: ./webapp/packer_setup
+
+      - name: Build Packer image
+        env:
+            Region: ${{ vars.AWS_REGION }}
+            Instance_Type: ${{ vars.INSTANCE_TYPE }}
+            Source_AMI: ${{ secrets.AWS_SOURCE_AMI }}
+            AMI_Name: "${{ vars.AMI_NAME }}"
+            AMI_Description: ${{ vars.AMI_DESCRIPTION }}
+            SSH_Username: ${{ vars.SSH_USERNAME }}
+            Volume_Type: ${{ vars.VOLUME_TYPE }}
+            AWS_Account_IDs: ${{ secrets.AWS_DEV_ACCOUNT_ID }}
+            GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+            SOURCE_IMAGE_FAMILY: ${{ secrets.SOURCE_IMAGE_FAMILY }}
+            GOOGLE_REGION: ${{ secrets.GOOGLE_REGION }}
+            GOOGLE_IMAGE_FAMILY: ${{ vars.GOOGLE_IMAGE_FAMILY }}
+        run:
+          packer build \
+            -var "region=${Region}" \
+            -var "instance_type=${Instance_Type}" \
+            -var "source_ami=${Source_AMI}" \
+            -var "ami_name=${AMI_Name}" \
+            -var "ami_description=${AMI_Description}" \
+            -var "ssh_username=${SSH_Username}" \
+            -var "volume_type=${Volume_Type}" \
+            -var "account_ids=[\"${AWS_Account_IDs}\"]" \
+            -var "google_project_id=${GOOGLE_PROJECT_ID}" \
+            -var "source_image_family=${SOURCE_IMAGE_FAMILY}" \
+            -var "google_region=${GOOGLE_REGION}" \
+            -var "google_image_family=${GOOGLE_IMAGE_FAMILY}" \
+          setup.pkr.hcl
+        working-directory: ./webapp/packer_setup
