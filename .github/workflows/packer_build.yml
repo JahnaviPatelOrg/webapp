@@ -139,6 +139,6 @@ jobs:
             -var "google_project_id=${GOOGLE_PROJECT_ID}" \
             -var "source_image_family=${SOURCE_IMAGE_FAMILY}" \
             -var "google_region=${GOOGLE_REGION}" \
-            -var "google_image_family=${GOOGLE_IMAGE_FAMILY}" \
+            -var "gmi_name=${GOOGLE_IMAGE_FAMILY}" \
           setup.pkr.hcl
         working-directory: ./webapp/packer_setup

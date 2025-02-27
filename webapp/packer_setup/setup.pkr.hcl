@@ -55,6 +55,12 @@ variable "google_project_id" {
   type = string
 }
 
+variable "gmi_name" {
+  type        = string
+  description = "GCP Image Name"
+  default     = "my-gce-image"
+}
+
 variable "source_image_family" {
   type = string
 }
