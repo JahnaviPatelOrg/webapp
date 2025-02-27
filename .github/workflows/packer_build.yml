@@ -109,7 +109,7 @@ jobs:
         uses: actions/download-artifact@v4.1.9
         with:
           name: webapp-artifact
-          path: ./webapp.zip
+          path: ./
 
       - name: Initialize Packer
         run: packer init setup.pkr.hcl
