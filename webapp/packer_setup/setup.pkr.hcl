@@ -113,7 +113,7 @@ source "googlecompute" "ubuntu" {
 build {
   sources = [
     "source.amazon-ebs.ubuntu",
-    "source.googlecompute.ubuntu"
+#     "source.googlecompute.ubuntu"
   ]
 
   provisioner "shell" {
