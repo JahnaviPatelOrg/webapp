@@ -59,7 +59,7 @@ source "amazon-ebs" "ubuntu" {
 
 source "googlecompute" "ubuntu" {
   project_id          = var.google_project_id
-  source_image_family = "my-gce-image"
+  source_image_family = "ubuntu-2004-lts"
   image_description   = "Webapp GCE Image packer"
   ssh_username        = "ubuntu"
   zone                = "us-east1-b"
@@ -68,7 +68,7 @@ source "googlecompute" "ubuntu" {
 
 build {
   sources = [
-    "source.amazon-ebs.ubuntu",
+    #     "source.amazon-ebs.ubuntu",
     "source.googlecompute.ubuntu"
   ]
   provisioner "shell" {
