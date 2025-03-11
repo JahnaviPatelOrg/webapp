@@ -41,9 +41,9 @@ variable "db_name" {
   type = string
 }
 
-# variable "secret_key" {
-#   type = string
-# }
+variable "secret_key" {
+  type = string
+}
 
 
 source "amazon-ebs" "ubuntu" {
