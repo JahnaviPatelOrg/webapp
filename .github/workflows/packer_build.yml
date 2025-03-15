@@ -143,14 +143,14 @@ jobs:
           setup.pkr.hcl
           
           echo "Setting GCP project to demo project"
-          gcloud config set project ${GOOGLE_PROJECT_ID_DEMO}
+          gcloud config set project ${GOOGLE_PROJECT_ID}
           
           echo "Copying image to demo project"
           gcloud compute images create "$IMAGE_NAME" \
                        --source-image=projects/${GOOGLE_PROJECT_ID}/global/images/${IMAGE_NAME} \
                        --source-image-project=${GOOGLE_PROJECT_ID} \
                        --project=${GOOGLE_PROJECT_ID_DEMO} \
-                       --family=dev_image_name \
+                       --family=ubuntu-2404-lts-amd64 \
                        --description="Copied image from DEV"
 
         working-directory: ./webapp/packer_setup
