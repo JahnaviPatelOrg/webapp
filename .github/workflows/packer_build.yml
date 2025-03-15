@@ -91,7 +91,7 @@ jobs:
           aws-region: us-east-1
 
       - name: 'gcloud Cloud SDK auth'
-        uses: 'google-github-actions/auth@v2'
+        uses: 'google-github-actions/auth@v1'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
@@ -115,6 +115,12 @@ jobs:
         run: packer init setup.pkr.hcl
         working-directory: ./webapp/packer_setup
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+      - run: gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
+      - run: gcloud auth list
+
+
       - name: Build Packer image
         env:
             Source_AMI: ${{ secrets.AWS_SOURCE_AMI }}
@@ -128,20 +134,7 @@ jobs:
             DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
             GOOGLE_PROJECT_ID_DEMO: ${{ secrets.GOOGLE_PROJECT_ID_DEMO }}
         run: |
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          IMAGE_NAME="webapp-image-$TIMESTAMP"
-          packer build \
-            -var "source_ami=${Source_AMI}" \
-            -var "account_ids=[\"${AWS_Account_IDs}\",\"${AWS_DEMO_ACCOUNT_ID}\"]" \
-            -var "google_project_id=${GOOGLE_PROJECT_ID}" \
-            -var "db_host=${DB_HOST}" \
-            -var "db_user=${DB_USER}" \
-            -var "db_password=${DB_PASSWORD}" \
-            -var "db_name=${DB_NAME}" \
-            -var "secret_key=${DJANGO_SECRET_KEY}" \
-            -var "image_name=${IMAGE_NAME}" \
-          setup.pkr.hcl
-          
+          IMAGE_NAME="webapp-image-20250315165154"
           
           echo "Copying image to demo project"
           echo "gcloud compute images create $IMAGE_NAME --source-image=projects/${GOOGLE_PROJECT_ID}/global/images/${IMAGE_NAME} --source-image-project=${GOOGLE_PROJECT_ID} --project=${GOOGLE_PROJECT_ID_DEMO} --family=ubuntu-2404-lts-amd64 --description='Copied image from DEV'"
