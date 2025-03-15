@@ -118,12 +118,12 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: setup gcp project
-        env:
-          GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
-        run: |
-            gcloud config set account ${{ secrets.GCP_CREDENTIALS }}
-            gcloud auth list
+#      - name: setup gcp project
+#        env:
+#          GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+#        run: |
+#            gcloud config set account ${{ secrets.GCP_CREDENTIALS }}
+#            gcloud auth list
 
 
       - name: Build Packer image
