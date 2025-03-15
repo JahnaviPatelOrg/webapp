@@ -136,16 +136,16 @@ jobs:
           
           echo "Copying image to demo project"
           echo "gcloud compute images create $IMAGE_NAME --source-image=projects/${GOOGLE_PROJECT_ID}/global/images/${IMAGE_NAME} --source-image-project=${GOOGLE_PROJECT_ID} --project=${GOOGLE_PROJECT_ID_DEMO} --family=ubuntu-2404-lts-amd64 --description='Copied image from DEV'"
-          gcloud compute images add-iam-policy-binding webapp-image-20250315165154 \            
-          --project=dev-webapp-451921 \           
-          --member='serviceAccount:467790541090@cloudservices.gserviceaccount.com' \            
+          gcloud projects add-iam-policy-binding dev-webapp-451921 \
+          --member='serviceAccount:467790541090@cloudservices.gserviceaccount.com' \
           --role='roles/compute.imageUser'
-
+  
+  
           gcloud compute images create webapp-image-20250315165154  \
-          --source-image-project=dev-webapp-451921 \
-          --source-image=projects/dev-webapp-451921/global/images/webapp-image-20250315151817 \
-          --project=plated-mechanic-453318-j5 \
-          --family=ubuntu-2404-lts-amd64 \
-          --description="Copied image from DEV"
+                  --source-image-project=dev-webapp-451921 \
+                  --source-image=projects/dev-webapp-451921/global/images/webapp-image-20250315151817 \
+                  --project=plated-mechanic-453318-j5 \
+                  --family=ubuntu-2404-lts-amd64 \
+                  --description="Copied image from DEV"
           
         working-directory: ./webapp/packer_setup
