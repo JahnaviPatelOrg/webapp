@@ -115,17 +115,15 @@ jobs:
         run: packer init setup.pkr.hcl
         working-directory: ./webapp/packer_setup
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
 
       - name: setup gcp project
         env:
-            GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+          GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
         run: |
-          echo "Setting GCP project to demo project"
-          gcloud config set project ${GOOGLE_PROJECT_ID}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-      - run: gcloud auth list
+            gcloud config set project ${GOOGLE_PROJECT_ID}
+            gcloud auth list
 
 
       - name: Build Packer image
