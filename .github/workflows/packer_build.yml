@@ -138,3 +138,16 @@ jobs:
             -var "secret_key=${DJANGO_SECRET_KEY}" \
           setup.pkr.hcl
         working-directory: ./webapp/packer_setup
+
+      - name: Copy GCP Image to Demo Project (Create Alias)
+        env:
+            GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+            GOOGLE_PROJECT_ID_DEMO: ${{ secrets.GOOGLE_PROJECT_ID_DEMO }}
+        run: |
+          echo "Copying image to demo project"
+          gcloud compute images create "demo_image_name" \
+                       --source-image=projects/${GCP_PROJECT_ID}/global/images/${IMAGE_NAME} \
+                       --source-image-project=${GCP_PROJECT_ID} \
+                       --project=${GCP_DEMO_PROJECT_ID} \
+                       --family=dev_image_name \
+                       --description="Copied image from DEV"

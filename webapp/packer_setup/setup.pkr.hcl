@@ -72,8 +72,8 @@ source "amazon-ebs" "ubuntu" {
   ami_users = var.account_ids
 
   tags = {
-    Name        = "webapp-gmi"
-    Description = "Webapp GMI packer"
+    Name        = "webapp-{{timestamp}}"
+    Description = "Webapp image packer"
   }
 }
 
@@ -83,14 +83,16 @@ source "googlecompute" "ubuntu" {
   image_description   = "Webapp GCE Image packer"
   ssh_username        = "ubuntu"
   zone                = "us-east1-b"
+  image_name        = "packer-{{timestamp}}"
 }
 
 
 build {
   sources = [
-    "source.amazon-ebs.ubuntu",
+    #     "source.amazon-ebs.ubuntu",
     "source.googlecompute.ubuntu"
   ]
+
   provisioner "shell" {
     script = "../scripts/installation.sh" # This script installs necessary dependencies and configurations
   }
