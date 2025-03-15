@@ -122,7 +122,7 @@ jobs:
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
         run: |
-            gcloud config set project ${GOOGLE_PROJECT_ID}
+            gcloud config set account ${{ secrets.GCP_CREDENTIALS }}
             gcloud auth list
 
 
