@@ -143,7 +143,7 @@ jobs:
           setup.pkr.hcl
           
           echo "Setting GCP project to demo project"
-          gcloud config set project ${GOOGLE_PROJECT_ID}
+          gcloud config set project ${GOOGLE_PROJECT_ID_DEMO}
           
           echo "Copying image to demo project"
           gcloud compute images create "$IMAGE_NAME" \
