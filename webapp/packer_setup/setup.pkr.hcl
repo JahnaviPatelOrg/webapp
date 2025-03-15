@@ -83,7 +83,7 @@ source "googlecompute" "ubuntu" {
   image_description   = "Webapp GCE Image packer"
   ssh_username        = "ubuntu"
   zone                = "us-east1-b"
-  image_name        = "packer-{{timestamp}}"
+  image_name          = "packer-{{timestamp}}"
 }
 
 
