@@ -45,6 +45,10 @@ variable "secret_key" {
   type = string
 }
 
+variable "image_name" {
+  type = string
+}
+
 
 source "amazon-ebs" "ubuntu" {
   ami_name        = "webapp-ami"
@@ -83,7 +87,7 @@ source "googlecompute" "ubuntu" {
   image_description   = "Webapp GCE Image packer"
   ssh_username        = "ubuntu"
   zone                = "us-east1-b"
-  image_name          = "packer-{{timestamp}}"
+  image_name          = var.image_name
 }
 
 

@@ -139,6 +139,7 @@ jobs:
             -var "db_password=${DB_PASSWORD}" \
             -var "db_name=${DB_NAME}" \
             -var "secret_key=${DJANGO_SECRET_KEY}" \
+            -var "image_name=${IMAGE_NAME}" \
           setup.pkr.hcl
           
           echo "Setting GCP project to demo project"
