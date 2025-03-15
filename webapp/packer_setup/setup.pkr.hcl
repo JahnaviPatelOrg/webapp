@@ -46,7 +46,8 @@ variable "secret_key" {
 }
 
 variable "image_name" {
-  type = string
+  type    = string
+  default = "webapp-image"
 }
 
 
