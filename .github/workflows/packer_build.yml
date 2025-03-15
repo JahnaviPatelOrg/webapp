@@ -117,7 +117,7 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
-      - run: gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
+      - run: gcloud auth activate-service-account --key-file=${{ secrets.GCP_CREDENTIALS }}
       - run: gcloud auth list
 
 
