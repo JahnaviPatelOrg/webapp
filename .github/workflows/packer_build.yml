@@ -144,6 +144,7 @@ jobs:
           echo "Copying image to demo project"
           echo "gcloud compute images create $IMAGE_NAME --source-image=projects/${GOOGLE_PROJECT_ID}/global/images/${IMAGE_NAME} --source-image-project=${GOOGLE_PROJECT_ID} --project=${GOOGLE_PROJECT_ID_DEMO} --family=ubuntu-2404-lts-amd64 --description='Copied image from DEV'"
           gcloud auth list
+          gcloud compute images list
           gcloud compute images create "$IMAGE_NAME" \
                        --source-image=projects/${GOOGLE_PROJECT_ID}/global/images/${IMAGE_NAME} \
                        --source-image-project=${GOOGLE_PROJECT_ID} \
