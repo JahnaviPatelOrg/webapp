@@ -23,7 +23,18 @@ def upload_image(request):
         file_path = f"{image_id}/{file_name}"
 
         # Upload to S3
-        s3_client.upload_fileobj(image, BUCKET_NAME, file_path)
+        s3_client.upload_fileobj(
+            image,
+            BUCKET_NAME,
+            file_path,
+            ExtraArgs={
+                'Metadata': {
+                    'upload_date': upload_date,
+                    'filename': file_name,
+                    'file_type': image.content_type
+                }
+            }
+        )
         s3_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{file_path}"
         print(file_name)
         # Save URL to RDS
