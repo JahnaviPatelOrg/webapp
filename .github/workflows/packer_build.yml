@@ -61,6 +61,7 @@ jobs:
           DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DATABASE_HOST: ${{ secrets.DB_HOST }}
           DATABASE_PORT: ${{ secrets.DB_PORT }}
+          S3_BUCKET_NAME: "your-s3-bucket-name"
         run: |
           python manage.py makemigrations
           python manage.py migrate
