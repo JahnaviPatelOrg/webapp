@@ -46,8 +46,6 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-dev python3-pip python3-venv build-essential libjpeg-dev zlib1g-dev libpng-dev libfreetype6-dev
           python -m pip install --upgrade pip
           pip install -r requirements.txt
         working-directory: ./webapp
@@ -61,7 +59,7 @@ jobs:
           DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DATABASE_HOST: ${{ secrets.DB_HOST }}
           DATABASE_PORT: ${{ secrets.DB_PORT }}
-          S3_BUCKET_NAME: "your-s3-bucket-name"
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
         run: |
           python manage.py makemigrations
           python manage.py migrate
