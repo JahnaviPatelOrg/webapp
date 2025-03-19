@@ -33,7 +33,6 @@ def upload_image(request):
                     'filename': file_name,
                     'file_type': image.content_type,
                     'file_path': file_path,
-                    'file_size': image.size
                 }
             }
         )
