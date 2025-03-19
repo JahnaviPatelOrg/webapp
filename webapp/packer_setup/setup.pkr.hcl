@@ -47,7 +47,7 @@ variable "secret_key" {
 
 
 source "amazon-ebs" "ubuntu" {
-  ami_name        = "webapp-ami"
+  ami_name        = "webapp-ami-{{timestamp}}"
   ami_description = "Webapp AMI packer"
   instance_type   = "t2.micro"
   region          = "us-east-1"
@@ -89,23 +89,23 @@ source "googlecompute" "ubuntu" {
 build {
   sources = [
     "source.amazon-ebs.ubuntu",
-    "source.googlecompute.ubuntu"
+    #     "source.googlecompute.ubuntu"
   ]
   provisioner "shell" {
     script = "../scripts/installation.sh" # This script installs necessary dependencies and configurations
   }
 
-  #   set up mysql database
-  # Create the database and user if they do not exist.
-  provisioner "shell" {
-    environment_vars = [
-      "DB_USER=${var.db_user}",
-      "DB_PASSWORD=${var.db_password}",
-      "DB_NAME=${var.db_name}",
-      "DB_HOST=${var.db_host}",
-    ]
-    script = "../scripts/sql_setup.sh"
-  }
+  #   #   set up mysql database
+  #   # Create the database and user if they do not exist.
+  #   provisioner "shell" {
+  #     environment_vars = [
+  #       "DB_USER=${var.db_user}",
+  #       "DB_PASSWORD=${var.db_password}",
+  #       "DB_NAME=${var.db_name}",
+  #       "DB_HOST=${var.db_host}",
+  #     ]
+  #     script = "../scripts/sql_setup.sh"
+  #   }
 
 
   #  paste webapp.zip created by github action
@@ -126,13 +126,6 @@ build {
 
   #   set up webapp
   provisioner "shell" {
-    environment_vars = [
-      "DB_USER=${var.db_user}",
-      "DB_PASSWORD=${var.db_password}",
-      "DB_NAME=${var.db_name}",
-      "DB_HOST=${var.db_host}",
-      "SECRET_KEY=${var.secret_key}"
-    ]
     script = "../scripts/webapp_setup.sh"
   }
 }

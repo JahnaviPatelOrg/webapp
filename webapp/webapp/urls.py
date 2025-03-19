@@ -18,4 +18,5 @@ from django.urls import path,include
 
 urlpatterns = [
     path('', include('healthz.urls')),
+    path('', include('image_upload.urls')),
 ]

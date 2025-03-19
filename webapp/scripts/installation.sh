@@ -11,11 +11,11 @@ sudo apt-get upgrade -y
 
 # Install Python and its package manager.
 echo "Installing Python and its package manager."
-sudo apt-get install -y python3 python3-pip python3-virtualenv python3-full pipx
+sudo apt install -y python3-dev python3-pip python3-venv build-essential libjpeg-dev zlib1g-dev libpng-dev libfreetype6-dev
 
 # Install other packages.
 echo "Installing other packages."
-sudo apt-get install -y mysql-server unzip libmysqlclient-dev pkg-config libmysqlclient-dev
+sudo apt-get install -y unzip libmysqlclient-dev pkg-config libmysqlclient-dev
 
 
 

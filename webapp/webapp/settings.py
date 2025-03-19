@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
-
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,13 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
+VM_IP = config('VM_IP', default='*')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-VM_IP = config('VM_IP', default='127.0.0.1')
+# VM_IP = config('VM_IP', default='127.0.0.1')
 
-ALLOWED_HOSTS = [VM_IP, 'localhost','127.0.0.1']
+ALLOWED_HOSTS = [VM_IP,'localhost','127.0.0.1']
 
 
 # Application definition
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "healthz",
     "tests",
+    "image_upload",
 ]
 
 MIDDLEWARE = [
@@ -53,13 +55,13 @@ WSGI_APPLICATION = "webapp.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DB_NAME', config('DB_NAME', default='csye6225')),
+        'USER': os.getenv('DB_USER', config('DB_USER', default='admin')),
+        'PASSWORD': os.getenv('DB_PASS', config('DB_PASS', default='default_password')),
+        'HOST': os.getenv('DB_HOST', config('DB_HOST', default='localhost')),  # Use RDS endpoint, NOT localhost
+        'PORT': os.getenv('DB_PORT', config('DB_PORT', default='3306')),
     }
 }
 

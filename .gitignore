@@ -189,3 +189,6 @@ crash.log
 
 # For built boxes
 *.box
+
+# any zip files
+*.zip
