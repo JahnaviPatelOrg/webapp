@@ -1,18 +1,5 @@
 #!/bin/bash
 
-# create .env file
-echo "Creating .env file"
-sudo bash -c "cat <<EOF > /etc/.env
-DB_NAME='${DB_NAME}'
-DB_USER='${DB_USER}'
-DB_PASSWORD='${DB_PASSWORD}'
-DB_HOST='${DB_HOST}'
-DB_PORT='${DB_PORT}'
-SECRET_KEY='${SECRET_KEY}'
-VM_IP='*'
-EOF"
-
-
 #Create a new Linux group for the application if it does not exist.
 echo "Creating a new Linux group for the application if it does not exist."
 sudo groupadd -f csye6225
@@ -26,9 +13,6 @@ echo "Creating directory for the web application."
 sudo mkdir -p /opt/csye6225
 sudo unzip /tmp/webapp.zip -d /opt/csye6225
 
-#put .env file in /opt/csye6225/webapp
-echo "Moving .env file to /opt/csye6225/webapp"
-sudo cp /etc/.env /opt/csye6225/webapp
 
 # Change the ownership of the directory to the new user and group.
 echo "Changing the ownership of the directory to the new user and group."
@@ -60,10 +44,6 @@ echo "Activating the virtual environment."
 echo "Installing the required packages."
 sudo bash -c "source /opt/csye6225/venv/bin/activate && pip install -r requirements.txt"
 
-#Migrate the database
-echo "Migrating the database."
-sudo bash -c "source /opt/csye6225/venv/bin/activate && python manage.py makemigrations && python manage.py migrate"
-
 #move the service file to /etc/systemd/system
 echo "Moving the service file to /etc/systemd/system"
 sudo cp /opt/csye6225/webapp/packer_setup/webapp.service /etc/systemd/system/webapp.service
@@ -73,8 +53,8 @@ sudo chown csye6225:csye6225 /etc/systemd/system/webapp.service
 echo "Starting the server."
 sudo systemctl daemon-reload
 sudo systemctl enable webapp
-sudo systemctl start webapp.service
-
+#sudo systemctl start webapp
+#sudo systemctl status webapp
 
 
 
