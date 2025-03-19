@@ -20,20 +20,33 @@ def upload_image(request):
         image_id = str(uuid.uuid4())
         file_name = image.name
         upload_date = datetime.utcnow().strftime("%Y-%m-%d")
-        file_path = f"{image_id}/{file_name}"
+        file_path = f"{BUCKET_NAME}/{image_id}/{file_name}"
 
         # Upload to S3
-        s3_client.upload_fileobj(image, BUCKET_NAME, file_path)
-        s3_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{file_path}"
-        print(file_name)
+        s3_client.upload_fileobj(
+            image,
+            BUCKET_NAME,
+            file_path,
+            ExtraArgs={
+                'Metadata': {
+                    'upload_date': upload_date,
+                    'filename': file_name,
+                    'file_type': image.content_type,
+                    'file_path': file_path,
+                    'file_size': image.size
+                }
+            }
+        )
+
         # Save URL to RDS
-        image_record = Image.objects.create(id=image_id,file_name=file_path,upload_date=upload_date,url=s3_url)
+        image_record = Image.objects.create(id=image_id,file_name=file_name,upload_date=upload_date,url=file_path)
 
         return JsonResponse({
-            "file_name": file_path,
+            "file_name": file_name,
             "id": image_id,
-            "url": s3_url,
-            "upload_date": upload_date
+            "url": file_path,
+            "upload_date": upload_date,
+            "image_type": image.content_type
         }, status=201)
     return JsonResponse({"error": "Bad Request"}, status=400)
 
