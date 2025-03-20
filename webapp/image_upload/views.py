@@ -54,6 +54,11 @@ def upload_image(request):
 def handle_image(request, image_id=None):
     if not image_id:
         return JsonResponse({"error": "Bad Request"}, status=400)
+    
+    try:
+        uuid_obj = uuid.UUID(image_id)
+    except ValueError:
+        return JsonResponse({"error": "Invalid UUID"}, status=400)
 
     if request.method == 'GET':
         try:
