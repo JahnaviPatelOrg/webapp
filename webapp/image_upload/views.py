@@ -69,7 +69,7 @@ def delete_image(request, image_id):
     print("delete_image")
     try:
         image_record = Image.objects.get(id=image_id)
-        file_key = image_record.url.split(f"{BUCKET_NAME}.s3.amazonaws.com/")[1]
+        file_key = image_record.url.split(f"{BUCKET_NAME}/")[1]
         print("FILE KEY" + file_key)
         # Delete from S3
         s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_key)
