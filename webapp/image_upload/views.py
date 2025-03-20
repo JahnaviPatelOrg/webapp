@@ -20,30 +20,27 @@ def upload_image(request):
         image_id = str(uuid.uuid4())
         file_name = image.name
         upload_date = datetime.utcnow().strftime("%Y-%m-%d")
-        file_path = f"{BUCKET_NAME}/{image_id}/{file_name}"
+        file_path = f"{image_id}/{file_name}"
 
         # Upload to S3
-        s3_client.upload_fileobj(
-            image,
-            BUCKET_NAME,
-            file_path,
-            ExtraArgs={
-                'Metadata': {
-                    'upload_date': upload_date,
-                    'filename': file_name,
-                    'file_type': image.content_type,
-                    'file_path': file_path,
-                }
-            }
-        )
-
+        s3_client.upload_fileobj(image, BUCKET_NAME, file_path,
+                                 ExtraArgs={
+            'Metadata': {
+                'upload_date': upload_date,
+                'filename': file_name,
+                'file_type': image.content_type,
+                'file_path': file_path,
+                'dile_id': image_id
+            }})
+        s3_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{file_path}"
+        print(file_name)
         # Save URL to RDS
-        image_record = Image.objects.create(id=image_id,file_name=file_name,upload_date=upload_date,url=file_path)
+        image_record = Image.objects.create(id=image_id,file_name=file_name,upload_date=upload_date,url=s3_url)
 
         return JsonResponse({
             "file_name": file_name,
             "id": image_id,
-            "url": file_path,
+            "url": s3_url,
             "upload_date": upload_date,
             "image_type": image.content_type
         }, status=201)
@@ -69,7 +66,7 @@ def delete_image(request, image_id):
     print("delete_image")
     try:
         image_record = Image.objects.get(id=image_id)
-        file_key = image_record.url.split(f"{BUCKET_NAME}/")[1]
+        file_key = image_record.url.split(f"{BUCKET_NAME}.s3.amazonaws.com/")[1]
         print("FILE KEY" + file_key)
         # Delete from S3
         s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_key)
