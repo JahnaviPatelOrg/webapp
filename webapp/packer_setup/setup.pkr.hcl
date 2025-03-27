@@ -92,20 +92,9 @@ build {
     #     "source.googlecompute.ubuntu"
   ]
   provisioner "shell" {
-    script = "../scripts/installation.sh" # This script installs necessary dependencies and configurations
+    script = "../scripts/installation.sh"
+    # This script installs necessary dependencies and configurations
   }
-
-  #   #   set up mysql database
-  #   # Create the database and user if they do not exist.
-  #   provisioner "shell" {
-  #     environment_vars = [
-  #       "DB_USER=${var.db_user}",
-  #       "DB_PASSWORD=${var.db_password}",
-  #       "DB_NAME=${var.db_name}",
-  #       "DB_HOST=${var.db_host}",
-  #     ]
-  #     script = "../scripts/sql_setup.sh"
-  #   }
 
 
   #  paste webapp.zip created by github action
@@ -128,4 +117,59 @@ build {
   provisioner "shell" {
     script = "../scripts/webapp_setup.sh"
   }
+
+  # Install and configure CloudWatch Agent
+  # Install and configure CloudWatch Agent
+  provisioner "shell" {
+    script = "../scripts/install_cloudwatch_agent.sh"
+  }
+
+  # Configure StatsD for CloudWatch Agent
+  provisioner "file" {
+    content     = <<EOT
+{
+  "agent": {
+    "metrics_collection_interval": 60,
+    "run_as_user": "root"
+  },
+  "metrics": {
+    "namespace": "WebApp",
+    "append_dimensions": {
+      "InstanceId": "$${aws:InstanceId}"
+    },
+    "metrics_collected": {
+      "statsd": {
+        "service_address": ":8125",
+        "metrics_collection_interval": 10,
+        "metrics_aggregation_interval": 60
+      },
+      "cpu": {
+        "measurement": ["cpu_usage_idle", "cpu_usage_user", "cpu_usage_system"],
+        "metrics_collection_interval": 60,
+        "resources": ["*"]
+      },
+      "mem": {
+        "measurement": ["mem_used_percent"],
+        "metrics_collection_interval": 60
+      },
+      "disk": {
+        "measurement": ["used_percent"],
+        "metrics_collection_interval": 60,
+        "resources": ["*"]
+      }
+    }
+  }
+}
+EOT
+    destination = "/tmp/amazon-cloudwatch-agent.json"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "sudo cp /tmp/amazon-cloudwatch-agent.json /opt/aws/amazon-cloudwatch-agent/etc/",
+      "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s",
+      "sudo systemctl enable amazon-cloudwatch-agent"
+    ]
+  }
+
 }

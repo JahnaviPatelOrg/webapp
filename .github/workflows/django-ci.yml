@@ -54,6 +54,10 @@ jobs:
           DATABASE_HOST: ${{ secrets.DB_HOST }}
           DATABASE_PORT: ${{ secrets.DB_PORT }}
           S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          # Add AWS credentials
+          AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AMI_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AMI_AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_REGION }}
         run: |
           python manage.py makemigrations
           python manage.py migrate
