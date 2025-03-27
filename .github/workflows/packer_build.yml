@@ -60,6 +60,7 @@ jobs:
           DATABASE_HOST: ${{ secrets.DB_HOST }}
           DATABASE_PORT: ${{ secrets.DB_PORT }}
           S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_REGION }}
         run: |
           python manage.py makemigrations
           python manage.py migrate
