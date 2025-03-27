@@ -28,7 +28,7 @@ def healthz(request):
     # Reject if any payload exists
     if request.body or request.GET:
         #Record failed request API timing
-        api_execution_time = (time.time() - start_time) * 1000
+        api_execution_time = (time.time() - start_time)
         statsd_client.timing('api.healthz.request.error.duration', api_execution_time)
 
         logger.warning(json.dumps({
@@ -52,7 +52,7 @@ def healthz(request):
         db_start_time = time.time()
         with statsd_client.timer('database.health_check_time'):
             HealthCheck.objects.create()
-        db_execution_time = (time.time() - db_start_time) * 1000  # Convert to ms
+        db_execution_time = (time.time() - db_start_time)   # Convert to ms
 
         logger.info(json.dumps({
             "level": "INFO",
@@ -67,14 +67,14 @@ def healthz(request):
         statsd_client.timing('api.healthz.db.duration', db_execution_time)
 
         # Record API execution time with StatsD (in milliseconds)
-        api_time = (time.time() - start_time) * 1000
+        api_time = (time.time() - start_time)
         statsd_client.timing('api.healthz.duration', api_time)
 
         return HttpResponse(status=200, headers=response_headers)
 
     except OperationalError:
         # Record failed API timing
-        api_execution_time = (time.time() - start_time) * 1000
+        api_execution_time = (time.time() - start_time)
         statsd_client.timing('api.healthz.error.duration', api_execution_time)
 
         logger.error(json.dumps({
@@ -90,7 +90,7 @@ def healthz(request):
 
     except Exception as e:
         # Record failed API timing for unexpected errors
-        api_execution_time = (time.time() - start_time) * 1000
+        api_execution_time = (time.time() - start_time)
         statsd_client.timing('api.healthz.exception.duration', api_execution_time)
 
         logger.exception(json.dumps({

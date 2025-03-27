@@ -65,7 +65,7 @@ def upload_image(request):
                                                      'file_path': file_path,
                                                      'file_id': image_id
                                                  }})
-                s3_upload_time = (time.time() - s3_upload_start) * 1000  # Convert to ms
+                s3_upload_time = (time.time() - s3_upload_start)   # Convert to ms
 
                 s3_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{file_path}"
 
@@ -87,7 +87,7 @@ def upload_image(request):
                     }))
                     s3_client.delete_object(Bucket=BUCKET_NAME, Key=file_path)
                     return JsonResponse({"error": "Database error. Please try again later."}, status=503)
-                db_execution_time = (time.time() - db_start_time) * 1000
+                db_execution_time = (time.time() - db_start_time)
                 # Structured logging for success
                 logger.info(json.dumps({
                     "level": "INFO",
@@ -109,7 +109,7 @@ def upload_image(request):
                 statsd_client.timing('database.save_image.duration', db_execution_time)
 
                 # Record API execution time with StatsD
-                api_time = (time.time() - start_time) * 1000
+                api_time = (time.time() - start_time)
                 statsd_client.timing('api.upload_image.duration', api_time)
 
                 return JsonResponse({
@@ -200,11 +200,11 @@ def handle_image(request, image_id=None):
             with statsd_client.timer('database.query_time'):
                 image_record = Image.objects.get(id=image_id)
 
-            db_execution_time = (time.time() - db_start_time) * 1000
+            db_execution_time = (time.time() - db_start_time)
 
             # TODO check time in console logs if roudoff is happening its crt and match with data in metrics
             # Record API execution time with StatsD
-            api_time = (time.time() - start_time) * 1000
+            api_time = (time.time() - start_time)
             statsd_client.timing('api.get_image.duration', api_time)
 
             return JsonResponse({
@@ -236,10 +236,10 @@ def handle_image(request, image_id=None):
                 image_record.delete()
 
             #  Record S3 delete time with StatsD
-            statsd_client.timing('s3.delete_image.duration', (time.time() - start_time) * 1000)
+            statsd_client.timing('s3.delete_image.duration', (time.time() - start_time) )
 
             # Record API execution time with StatsD
-            api_time = (time.time() - start_time) * 1000
+            api_time = (time.time() - start_time)
             statsd_client.timing('api.delete_image.duration', api_time)
 
             return JsonResponse({}, status=204)
