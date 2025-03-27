@@ -7,3 +7,5 @@ sqlparse==0.5.3
 boto3==1.37.15
 django_storages[s3]==1.14.4
 pillow==11.0.0
+watchtower==3.4.0
+statsd==4.0.1

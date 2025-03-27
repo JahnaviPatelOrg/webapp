@@ -37,7 +37,7 @@ cd webapp
 ```bash
 python -m venv venv
 source venv/bin/activate  # On macOS/Linux
-venv\Scripts\activate     # On Windows
+#venv\Scripts\activate     # On Windows
 
 cd webapp # Go to webapp
 ```
@@ -97,14 +97,14 @@ Packer is used to create machine images for deployment. The configuration is def
    cd webapp/packer_setup
    ```
 
-3. **Validate the Packer Template**
+3. **Validate the Packer Template with variabled file**
    ```bash
-   packer validate setup.pkr.hcl
+   packer validate -var-file=variables.pkr.hcl setup.pkr.hcl
    ```
 
 4. **Build the Image**
    ```bash
-   packer build setup.pkr.hcl
+   packer build setup.pkr.hcl -var-file=variables.pkr.hcl
    ```
 
 Ensure your AWS credentials are properly configured before running the Packer commands.
@@ -207,6 +207,50 @@ Ensure the following environment variables are set in your `.env` file:
 
 Refer to the `webapp/scripts/webapp_setup.sh` script for detailed setup instructions.
 
+## Logging and Metrics
 
+### CloudWatch Integration
+
+This application uses AWS CloudWatch to store logs and metrics, providing comprehensive monitoring capabilities:
+
+#### Logs
+- Structured JSON logs for all API calls
+- Error tracking with execution timestamps
+- Operation details including endpoint and HTTP method
+- Exception details for troubleshooting
+
+#### Metrics
+- **API Timing Metrics**: All API endpoints record execution time in milliseconds
+    - `api.healthz.duration_ms`
+    - `api.upload_image.duration_ms`
+    - `api.delete_image.duration_ms`
+
+- **Database Metrics**:
+    - `database.query_time`
+    - `database.delete_time`
+    - `database.health_check_time`
+
+- **S3 Operations**:
+    - `s3.delete_time`
+    - `s3.delete_image.duration_ms`
+
+- **System Metrics**:
+    - CPU usage (idle, user, system)
+    - Memory utilization
+    - Disk usage
+
+### Implementation Details
+
+- **StatsD Client**: Used for collecting and aggregating metrics
+- **CloudWatch Agent**: Configured to collect StatsD metrics every 10 seconds
+- **Metrics Namespace**: All metrics stored under "WebApp" namespace
+- **Instance Dimensions**: Metrics tagged with EC2 instance ID
+- **Aggregation**: Metrics aggregated at 60-second intervals
+
+### Infrastructure Setup
+
+- CloudWatch Agent installed and configured via Packer
+- Agent runs as root with system service enabled
+- Custom configuration stored at `/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json`
 
 
