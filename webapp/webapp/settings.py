@@ -138,3 +138,16 @@ LOGGING = {
         }
     }
 }
+
+import sys
+
+# Check if running tests
+if 'test' in sys.argv:
+    # Remove or disable watchtower handler during tests
+    for handler in LOGGING['handlers']:
+        if handler == 'watchtower':
+            LOGGING['handlers'].pop('watchtower', None)
+    # Update loggers to remove references to watchtower
+    for logger_name, logger_config in LOGGING['loggers'].items():
+        if 'watchtower' in logger_config.get('handlers', []):
+            logger_config['handlers'].remove('watchtower')
