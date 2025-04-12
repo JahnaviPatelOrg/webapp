@@ -135,8 +135,8 @@ jobs:
 
       - name: Determine AMI ID
         run: |
-            AMI_ID=$(jq -r '.builds[-1].artifact_id' ./webapp/packer_setup/packer-manifest.json | cut -d':' -f2)
-            echo "Using real AMI from packer manifest: $AMI_ID"
+            AMI_ID=$(jq -r '.builds[-1].artifact_id' ./webapp/packer_setup/manifest.json | cut -d':' -f2)
+            echo "Using AMI from packer manifest: $AMI_ID"
             echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials for Demo Account
