@@ -253,4 +253,13 @@ This application uses AWS CloudWatch to store logs and metrics, providing compre
 - Agent runs as root with system service enabled
 - Custom configuration stored at `/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json`
 
+## GitHub Actions: AMI Deployment & Instance Refresh to DEMO Account
+
+This section of the GitHub Actions workflow performs a rolling update of EC2 instances in an Auto Scaling Group (ASG) using a **newly created AMI**. It ensures the new AMI is applied by:
+
+- Switching credentials to the **DEMO AWS account**
+- Creating a **new Launch Template version** with the latest AMI
+- Triggering an **instance refresh** on the ASG
+- **Waiting for the instance refresh to complete** before finishing the workflow
+
 
