@@ -132,3 +132,62 @@ jobs:
             -var "secret_key=${DJANGO_SECRET_KEY}" \
           setup.pkr.hcl
         working-directory: ./webapp/packer_setup
+
+      - name: Determine AMI ID (test or real)
+        run: |
+          if [[ "${{ secrets.USE_TEST_AMI }}" == "true" ]]; then
+            echo "Using test AMI from secrets"
+            echo "AMI_ID=${{ secrets.TEST_AMI_ID }}" >> $GITHUB_ENV
+          else
+            AMI_ID=$(jq -r '.builds[-1].artifact_id' ./webapp/packer_setup/packer-manifest.json | cut -d':' -f2)
+            echo "Using real AMI from packer manifest: $AMI_ID"
+            echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
+          fi
+
+      - name: Configure AWS Credentials for Demo Account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEMO_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEMO_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          
+      - name: Debug - List Launch Templates
+        run: aws ec2 describe-launch-templates --query 'LaunchTemplates[*].LaunchTemplateName' --output table
+
+      - name: Create new Launch Template version
+        run: |
+          aws ec2 create-launch-template-version \
+            --launch-template-name ${{ secrets.LAUNCH_TEMPLATE_NAME }} \
+            --source-version \$Latest \
+            --version-description "Updated with latest AMI" \
+            --launch-template-data "{\"ImageId\":\"${{ env.AMI_ID }}\"}"
+
+      - name: Start Instance Refresh
+        id: refresh
+        run: |
+          REFRESH_ID=$(aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name ${{ secrets.AUTO_SCALING_GROUP_NAME }} \
+            --strategy Rolling \
+            --query 'InstanceRefreshId' \
+            --output text)
+          echo "REFRESH_ID=$REFRESH_ID" >> $GITHUB_ENV
+          echo "::set-output name=refresh_id::$REFRESH_ID"
+
+      - name: Wait for Instance Refresh to complete
+        run: |
+          for i in {1..60}; do
+            STATUS=$(aws autoscaling describe-instance-refreshes \
+              --auto-scaling-group-name ${{ secrets.AUTO_SCALING_GROUP_NAME }} \
+              --instance-refresh-ids ${{ steps.refresh.outputs.refresh_id }} \
+              --query 'InstanceRefreshes[0].Status' \
+              --output text)
+            echo "Current status: $STATUS"
+            if [[ "$STATUS" == "Successful" ]]; then
+              echo "Instance refresh completed successfully."
+              exit 0
+            elif [[ "$STATUS" == "Failed" || "$STATUS" == "Cancelled" ]]; then
+              echo "Instance refresh failed or cancelled."
+              exit 1
+            fi
+            sleep 30
+          done
