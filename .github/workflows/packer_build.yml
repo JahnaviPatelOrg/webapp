@@ -142,6 +142,9 @@ jobs:
           aws configure set aws_access_key_id ${{ secrets.DEMO_AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.DEMO_AWS_SECRET_ACCESS_KEY }}
           aws configure set region us-east-1
+          
+      - name: Debug - List Launch Templates
+        run: aws ec2 describe-launch-templates --query 'LaunchTemplates[*].LaunchTemplateName' --output table
 
       - name: Create new Launch Template version
         run: |
