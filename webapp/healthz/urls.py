@@ -3,5 +3,4 @@ from .views import healthz
 
 urlpatterns = [
     path('healthz', healthz, name='healthz'),
-    path('cicd', healthz, name='healthz-cicd'),
 ]
