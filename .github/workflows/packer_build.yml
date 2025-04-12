@@ -133,7 +133,7 @@ jobs:
           setup.pkr.hcl
         working-directory: ./webapp/packer_setup
 
-      - name: Determine AMI ID (test or real)
+      - name: Determine AMI ID
         run: |
             AMI_ID=$(jq -r '.builds[-1].artifact_id' ./webapp/packer_setup/packer-manifest.json | cut -d':' -f2)
             echo "Using real AMI from packer manifest: $AMI_ID"
