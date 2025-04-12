@@ -98,7 +98,6 @@ jobs:
         working-directory: ./webapp/packer_setup
 
       - name: Build Packer image (only if using real AMI)
-        if: ${{ secrets.USE_TEST_AMI != 'true' }}
         env:
           Source_AMI: ${{ secrets.AWS_SOURCE_AMI }}
           AWS_Account_IDs: ${{ secrets.AWS_DEMO_ACCOUNT_ID }}
@@ -110,16 +109,21 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         run: |
+          if [[ "${{ secrets.USE_TEST_AMI }}" != "true" ]]; then
+          echo "Running real AMI build with packer..."
           packer build \
-            -var "source_ami=${Source_AMI}" \
-            -var "account_ids=[\"${AWS_Account_IDs}\",\"${AWS_DEMO_ACCOUNT_ID}\"]" \
-            -var "google_project_id=${GOOGLE_PROJECT_ID}" \
-            -var "db_host=${DB_HOST}" \
-            -var "db_user=${DB_USER}" \
-            -var "db_password=${DB_PASSWORD}" \
-            -var "db_name=${DB_NAME}" \
-            -var "secret_key=${DJANGO_SECRET_KEY}" \
+          -var "source_ami=${{ secrets.AWS_SOURCE_AMI }}" \
+          -var "account_ids=[\"${{ secrets.AWS_DEMO_ACCOUNT_ID }}\"]" \
+          -var "google_project_id=${{ secrets.GOOGLE_PROJECT_ID }}" \
+          -var "db_host=${{ secrets.DB_HOST }}" \
+          -var "db_user=${{ secrets.DB_USER }}" \
+          -var "db_password=${{ secrets.DB_PASSWORD }}" \
+          -var "db_name=${{ secrets.DB_NAME }}" \
+          -var "secret_key=${{ secrets.DJANGO_SECRET_KEY }}" \
           setup.pkr.hcl
+          else
+          echo "Skipping AMI build — using test AMI"
+          fi
         working-directory: ./webapp/packer_setup
 
       - name: Determine AMI ID (test or real)
