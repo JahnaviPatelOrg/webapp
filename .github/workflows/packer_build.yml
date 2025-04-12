@@ -135,14 +135,9 @@ jobs:
 
       - name: Determine AMI ID (test or real)
         run: |
-          if [[ "${{ secrets.USE_TEST_AMI }}" == "true" ]]; then
-            echo "Using test AMI from secrets"
-            echo "AMI_ID=${{ secrets.TEST_AMI_ID }}" >> $GITHUB_ENV
-          else
             AMI_ID=$(jq -r '.builds[-1].artifact_id' ./webapp/packer_setup/packer-manifest.json | cut -d':' -f2)
             echo "Using real AMI from packer manifest: $AMI_ID"
             echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
-          fi
 
       - name: Configure AWS Credentials for Demo Account
         uses: aws-actions/configure-aws-credentials@v1
