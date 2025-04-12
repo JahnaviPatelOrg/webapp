@@ -4,9 +4,16 @@ on:
   pull_request:
     branches:
       - main
+    types:
+      - closed
+
+permissions:
+    id-token: write
+    contents: read
 
 jobs:
   build:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     env:
@@ -16,6 +23,7 @@ jobs:
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_PORT: ${{ secrets.DB_PORT }}
       DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+
 
     strategy:
       matrix:
@@ -35,11 +43,13 @@ jobs:
           sudo /etc/init.d/mysql start
           mysql -e "CREATE DATABASE IF NOT EXISTS ${{ secrets.DB_NAME }};" -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }}
 
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
         working-directory: ./webapp
+
 
       - name: Run Migrations and Tests
         env:
@@ -50,6 +60,7 @@ jobs:
           DATABASE_HOST: ${{ secrets.DB_HOST }}
           DATABASE_PORT: ${{ secrets.DB_PORT }}
           S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          # Add AWS credentials
           AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AMI_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AMI_AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ vars.AWS_REGION }}
@@ -76,6 +87,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -97,20 +109,18 @@ jobs:
         run: packer init setup.pkr.hcl
         working-directory: ./webapp/packer_setup
 
-      - name: Build Packer image (only if using real AMI)
+      - name: Build Packer image
         env:
-          Source_AMI: ${{ secrets.AWS_SOURCE_AMI }}
-          AWS_Account_IDs: ${{ secrets.AWS_DEMO_ACCOUNT_ID }}
-          AWS_DEMO_ACCOUNT_ID: ${{ secrets.AWS_DEMO_ACCOUNT_ID }}
-          GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+            Source_AMI: ${{ secrets.AWS_SOURCE_AMI }}
+            AWS_Account_IDs: ${{ secrets.AWS_DEMO_ACCOUNT_ID }}
+            AWS_DEMO_ACCOUNT_ID: ${{ secrets.AWS_DEMO_ACCOUNT_ID }}
+            GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+            DB_HOST: ${{ secrets.DB_HOST }}
+            DB_USER: ${{ secrets.DB_USER }}
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            DB_NAME: ${{ secrets.DB_NAME }}
+            DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         run: |
-          if [[ "${{ secrets.USE_TEST_AMI }}" != "true" ]]; then
-          echo "Running real AMI build with packer..."
           packer build \
             -var "source_ami=${Source_AMI}" \
             -var "account_ids=[\"${AWS_Account_IDs}\",\"${AWS_DEMO_ACCOUNT_ID}\"]" \
@@ -121,9 +131,6 @@ jobs:
             -var "db_name=${DB_NAME}" \
             -var "secret_key=${DJANGO_SECRET_KEY}" \
           setup.pkr.hcl
-          else
-          echo "Skipping AMI build — using test AMI"
-          fi
         working-directory: ./webapp/packer_setup
 
       - name: Determine AMI ID (test or real)
